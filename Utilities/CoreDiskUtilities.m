@@ -133,11 +133,6 @@ classdef CoreDiskUtilities
             % specified in the input parameter), and the Second property is the
             % just the name of the deepest subdirectory
             
-            if isempty(root_path)
-                dir_list = [];
-                return;
-            end
-            
             dirs_to_do = CoreStack(CorePair(root_path, ''));
             dirs_found = CoreStack;
             while ~dirs_to_do.IsEmpty
@@ -239,7 +234,7 @@ classdef CoreDiskUtilities
                 [dir_path, ~, ~] = fileparts(filename);
                 exist_result_2 = exist(dir_path, 'file');
                 if exist_result_2 ~= 0
-                    rrror('CoreDiskUtilities:DirectoryDoesNotExist', 'The argument passed to CoreDiskUtilities.GetDirectoryForFile() does not exist or is not a directory.');
+                    error('CoreDiskUtilities:DirectoryDoesNotExist', 'The argument passed to CoreDiskUtilities.GetDirectoryForFile() does not exist or is not a directory.');
                 else
                     dir = dir_path;
                 end
@@ -285,6 +280,22 @@ classdef CoreDiskUtilities
             end
             matlab_name_list = plugins_found.GetAndClear;
         end        
+                    
+        function fileNames = GetRecursiveListOfFiles(importDir, filenameFilter)
+            % Returns a list of all files in this directory and its
+            % subdirectories matching the filename criteria
+            
+            fileNames = {};
+            [absoluteFilePath, ~] = CoreDiskUtilities.GetFullFileParts(importDir);
+            directories = CoreDiskUtilities.GetRecursiveListOfDirectories(absoluteFilePath);
+            for directory = directories
+                fileList = CoreDiskUtilities.GetDirectoryFileList(directory{1}.First, filenameFilter);
+                for file = fileList
+                    fileNames{end + 1} = fullfile(directory{1}.First, file{1});
+                end
+            end
+        end
+        
     end
 end
 
