@@ -269,31 +269,35 @@ classdef CoreDiskUtilities
         end
         
         function matlab_name_list = GetAllMatlabFilesInFolders(folders_to_scan)
+            % Takes in a list of CorePairs
+            
             folders_to_scan = CoreStack(folders_to_scan);
-            plugins_found = CoreStack;
+            mfilesFound = CoreStack;
             while ~folders_to_scan.IsEmpty
                 next_folder = folders_to_scan.Pop;
                 next_plugin_list = CoreDiskUtilities.GetDirectoryFileList(next_folder.First, '*.m');
                 for next_plugin = next_plugin_list
-                    plugins_found.Push(CorePair(CoreTextUtilities.StripFileparts(next_plugin{1}), next_folder.Second));
+                    mfilesFound.Push(CorePair(CoreTextUtilities.StripFileparts(next_plugin{1}), next_folder.Second));
                 end
             end
-            matlab_name_list = plugins_found.GetAndClear;
+            matlab_name_list = mfilesFound.GetAndClear;
         end        
                     
-        function fileNames = GetRecursiveListOfFiles(importDir, filenameFilter)
+        function fileNames = GetRecursiveListOfFiles(startDir, filenameFilter)
             % Returns a list of all files in this directory and its
             % subdirectories matching the filename criteria
             
-            fileNames = {};
-            [absoluteFilePath, ~] = CoreDiskUtilities.GetFullFileParts(importDir);
+            [absoluteFilePath, ~] = CoreDiskUtilities.GetFullFileParts(startDir);
+            filesFound = CoreStack;
+            
             directories = CoreDiskUtilities.GetRecursiveListOfDirectories(absoluteFilePath);
             for directory = directories
                 fileList = CoreDiskUtilities.GetDirectoryFileList(directory{1}.First, filenameFilter);
                 for file = fileList
-                    fileNames{end + 1} = fullfile(directory{1}.First, file{1});
+                    filesFound.push(fullfile(directory{1}.First, file{1}));
                 end
             end
+            fileNames = filesFound.GetAndClear;
         end
         
     end
