@@ -41,7 +41,7 @@ classdef CoreMex < CoreBaseClass
         function Recompile(obj)
             % Forces recompilation of all mex files
             
-            obj.MexSingleton.Recompile(obj.FileList, obj.CompileBinDirectory, obj.Reporting);
+            obj.MexSingleton.RecompileMexFiles(obj.FileList, obj.CompileBinDirectory, obj.Reporting);
         end
     end
     
