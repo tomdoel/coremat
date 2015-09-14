@@ -19,7 +19,7 @@ function CoreCompileMexFiles(mex_cache, output_directory, mex_files_to_compile, 
     %     -------
     %     Part of CoreMat. https://github.com/tomdoel/coremat
     %     Author: Tom Doel, 2013.  www.tomdoel.com
-    %     Distributed under the GNU GPL v3 licence. Please see website for details.
+    %     Distributed under the MIT licence. Please see website for details.
     %    
     
     reporting.ShowProgress('Checking mex files');
