@@ -45,14 +45,10 @@ classdef CoreMexCache < CoreBaseClass
     end
     
     methods
-        function obj = CoreMexCache(cacheFilename, mex_info_map)
+        function obj = CoreMexCache(cacheFilename)
+            obj.MexInfoMap = containers.Map;
             if nargin > 0
                 obj.CacheFilename = cacheFilename;
-                if nargin > 1 && ~isempty(mex_info_map)
-                    obj.MexInfoMap = mex_info_map;
-                else
-                    obj.MexInfoMap = containers.Map;
-                end
             end
         end
         
@@ -75,10 +71,24 @@ classdef CoreMexCache < CoreBaseClass
         function UpdateCache(obj, processed_mex_file_list, reporting)
             % Update the saved map without removing entries not on our
             % current list
+            any_changes = false;
             for mex_file_key = processed_mex_file_list.keys
                 mex_file_value = processed_mex_file_list(mex_file_key{1});
+                
+                % Determine if there are any changes in the current key
+                if ~any_changes
+                    if ~obj.MexInfoMap.isKey(mex_file_key{1})
+                        any_changes = true;
+                    else
+                        any_changes = any_changes || ~isequal(obj.MexInfoMap(mex_file_key{1}), mex_file_value);
+                    end
+                end
                 obj.MexInfoMap(mex_file_key{1}) = mex_file_value;
-                obj.IsNewlyCreated = false;
+                obj.IsNewlyCreated = false;                
+            end
+            
+            % Update the cached file only if there are changes
+            if any_changes
                 obj.SaveCache(reporting);
             end
         end
